@@ -1,0 +1,80 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          firewall
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Démarre les règles iptables
+# Description:       Charge la configuration du pare-feu iptables
+### END INIT INFO
+
+
+###
+# Réinitialisation et fermeture du traffic
+###
+
+# Vider les tables actuelles
+iptables -t filter -F
+
+# Vider les règles personnelles
+iptables -t filter -X
+
+# Interdire toute connexion entrante et sortante
+iptables -t filter -P INPUT DROP
+iptables -t filter -P FORWARD DROP
+iptables -t filter -P OUTPUT DROP
+
+# ---
+
+# Ne pas casser les connexions etablies
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Autoriser loopback
+iptables -t filter -A INPUT -i lo -j ACCEPT
+iptables -t filter -A OUTPUT -o lo -j ACCEPT
+
+# ICMP (Ping)
+iptables -t filter -A INPUT -p icmp -j ACCEPT
+iptables -t filter -A OUTPUT -p icmp -j ACCEPT
+
+# ---
+
+# Interface PROXMOX
+
+iptables -t filter -A INPUT -p tcp --dport 8006 -j ACCEPT
+
+# SSH In
+iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# SSH Out
+iptables -t filter -A OUTPUT -p tcp --dport 22 -j ACCEPT
+
+# DNS In/Out
+iptables -t filter -A OUTPUT -p tcp --dport 53 -j ACCEPT
+iptables -t filter -A OUTPUT -p udp --dport 53 -j ACCEPT
+iptables -t filter -A INPUT -p tcp --dport 53 -j ACCEPT
+iptables -t filter -A INPUT -p udp --dport 53 -j ACCEPT
+
+# NTP Out
+iptables -t filter -A OUTPUT -p udp --dport 123 -j ACCEPT
+
+# HTTP + HTTPS Out
+iptables -t filter -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -t filter -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
+# HTTP + HTTPS In
+iptables -t filter -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -t filter -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables -t filter -A INPUT -p tcp --dport 8443 -j ACCEPT
+
+###
+# NAT OPENVPN VMs
+###
+
+iptables -t filter -A INPUT -p udp -m state --state NEW -m udp --dport 1194 -j ACCEPT
+iptables -t filter -A FORWARD -s 192.168.88.0/24 -j ACCEPT
+iptables -t filter -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o vmbr0 -j MASQUERADE
