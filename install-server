@@ -1,0 +1,18 @@
+#!/bin/bash 
+
+echo -e "Installation du serveur\n"
+echo -e "Mise à jour\n"
+apt-get update && apt-get -y upgrade
+echo -e "Installation des paquets utilitaires\n"
+apt-get -y install htop zip unzip rar unrar 
+echo -e "Mise en place du firewall\n"
+cp firewall /etc/init.d/firewall
+chmod +x /etc/init.d/firewall
+update-rc.d firewall defaults
+/etc/init.d/firewall
+echo -e "Firewall opérationnel\n"
+echo -e "Configuration du serveur SSH\n"
+service ssh restart
+echo -e "Pensez à copié le contenu votre clé Ssh publique dans le fichier /root/.ssh/authorized_keys\n"
+echo -e "Installation et configuration de Fail2ban\n"
+apt-get -y install fail2ban
