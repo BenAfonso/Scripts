@@ -16,3 +16,23 @@ service ssh restart
 echo -e "Pensez à copié le contenu votre clé Ssh publique dans le fichier /root/.ssh/authorized_keys\n"
 echo -e "Installation et configuration de Fail2ban\n"
 apt-get -y install fail2ban
+service fail2ban restart
+echo -e "Installation du serveur Openvpn\n"
+chmod +x Openvpn/install-openvpn.sh
+./Openvpn/install-openvpn.sh
+chmod +x Openvpn/add-openvpn-client.sh
+echo -e "Entrez le nom du client openvpn à configurer:\n"
+read client
+./Openvpn/add-openvpn-client.sh $client
+cp /etc/openvpn/clients/$client.ovpn /home/bassman/$client.conf
+echo -e "Recuperez le fichier de configuration client openvpn dans le répertoire /home/bassman\n"
+echo -e "Modification du Message of The Day\n"
+apt-get -y install toilet
+echo -e "Entrez votre MOTD:\n"
+read message
+echo -e "\n\n\n" > /etc/motd
+toilet -f pagga -F gay "$message" >> /etc/motd
+echo -e "by M BASSMAN\n\n\n"
+
+
+
