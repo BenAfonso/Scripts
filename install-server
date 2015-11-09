@@ -33,6 +33,6 @@ read message
 echo -e "\n\n\n" > /etc/motd
 toilet -f pagga -F gay "$message" >> /etc/motd
 echo -e "by M BASSMAN\n\n\n"
-
+sed 's/^/ \t/' /etc/motd
 
 
