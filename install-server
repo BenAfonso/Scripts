@@ -6,7 +6,7 @@ apt-get update && apt-get -y upgrade
 echo -e "Installation des paquets utilitaires\n"
 apt-get -y install htop zip unzip rar unrar 
 echo -e "Mise en place du firewall\n"
-cp firewall /etc/init.d/firewall
+cp ./firewall /etc/init.d/firewall
 chmod +x /etc/init.d/firewall
 update-rc.d firewall defaults
 /etc/init.d/firewall
@@ -18,7 +18,7 @@ echo -e "Installation et configuration de Fail2ban\n"
 apt-get -y install fail2ban
 service fail2ban restart
 echo -e "Installation du serveur Openvpn\n"
-chmod +x Openvpn/install-openvpn.sh
+chmod +x ./Openvpn/install-openvpn.sh
 ./Openvpn/install-openvpn.sh
 chmod +x Openvpn/add-openvpn-client.sh
 echo -e "Entrez le nom du client openvpn à configurer:\n"
