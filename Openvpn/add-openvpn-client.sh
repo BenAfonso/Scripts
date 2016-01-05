@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 # Samuel Aubertin
 if [[ -z "$1" ]]
 then
@@ -12,10 +12,10 @@ echo "Enter to continue, Ctrl+C to leave"
 read
 
 # Lets go to the easyy-rsa dir and get server config
-cd /etc/openvpn/easy-rsa 
+cd /etc/openvpn/easy-rsa
 source ./vars
 
-# Now lets generate a SSL key for our client 
+# Now lets generate a SSL key for our client
 ./build-key $1
 
 # Client config
@@ -27,7 +27,7 @@ echo "
 client
 dev tun
 proto udp
-remote it-science.fr 1194
+remote darkypi.cf 1194
 resolv-retry infinite
 auth SHA512
 cipher AES-128-CBC
@@ -47,5 +47,3 @@ echo -e "<ca>\n$(cat /etc/openvpn/easy-rsa/keys/ca.crt)\n</ca>" >> /etc/openvpn/
 echo -e "<cert>\n$(cat /etc/openvpn/easy-rsa/keys/$1.crt)\n</cert>" >> /etc/openvpn/clients/$1.ovpn
 echo -e "<key>\n$(cat /etc/openvpn/easy-rsa/keys/$1.key)\n</key>" >> /etc/openvpn/clients/$1.ovpn
 echo -e "<tls-auth>\n$(cat /etc/openvpn/easy-rsa/keys/ta.key)\n</tls-auth>" >> /etc/openvpn/clients/$1.ovpn
-
-
