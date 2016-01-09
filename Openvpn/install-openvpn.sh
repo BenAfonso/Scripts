@@ -8,7 +8,7 @@ test ! -c /dev/net/tun && echo openvpn requires tun support || echo tun is avail
 apt-get install openvpn zip
 
 # Add an easy-rsa dir
-mdkir /etc/openvpn/easy-rsa/
+mkdir /etc/openvpn/easy-rsa/
 cp -pr /usr/share/easy-rsa /etc/openvpn/easy-rsa
 cd /etc/openvpn/easy-rsa
 
@@ -31,14 +31,14 @@ export KEY_SIZE=2048
 export KEY_COUNTRY="FR"
 export KEY_PROVINCE="FR"
 export KEY_CITY="Montpellier"
-export KEY_ORG="darkypi.cf"
-export KEY_EMAIL="root@darkypi.cf"' > ./vars
+export KEY_ORG="31.32.127.70"
+export KEY_EMAIL="root@31.32.127.70"' > ./vars
 
 # Generating SSL things (CA + server + Diffie Helman)
 source ./vars
 ./clean-all
 ./build-ca
-./build-key-server darkypi.cf
+./build-key-server 31.32.127.70
 ./build-dh
 
 # Generating the PSK key for TLS signature
@@ -46,12 +46,12 @@ openvpn --genkey --secret /etc/openvpn/easy-rsa/keys/ta.key
 
 # Tidying !
 mkdir -p /etc/openvpn/certs
-cp -pv /etc/openvpn/easy-rsa/keys/{ca.{crt,key},darkypi.cf.{crt,key},ta.key,dh2048.pem} /etc/openvpn/certs/
+cp -pv /etc/openvpn/easy-rsa/keys/{ca.{crt,key},31.32.127.70.{crt,key},ta.key,dh2048.pem} /etc/openvpn/certs/
 
 # The server configuration !
 # Listening on 0.0.0.0:1194 and using UDP, because TCP is bad for tunnels U KNOW.
 # The virtual network range is 192.168.88.0/24 and the default router becames the VPN server.
-# DHCP pushes darkypi.cf domain and the 10.0.2.2 DNS server.conf.
+# DHCP pushes 31.32.127.70 domain and the 10.0.2.2 DNS server.conf.
 # DHCP also specifies Windows clients to disable NetBios on this network.
 # We want the clients to communicate together so we put client-to-client option.
 # We ping the server every 1800 sec (30 min) and consider it down once 4000 sec (66 min) (smartphones U KNOW).
@@ -65,8 +65,8 @@ proto udp
 dev tun
 
 ca /etc/openvpn/certs/ca.crt
-cert /etc/openvpn/certs/darkypi.cf.crt
-key /etc/openvpn/certs/darkypi.cf.key
+cert /etc/openvpn/certs/31.32.127.70.crt
+key /etc/openvpn/certs/31.32.127.70.key
 dh /etc/openvpn/certs/dh2048.pem
 tls-auth /etc/openvpn/certs/ta.key 0
 
@@ -76,7 +76,7 @@ push "route 192.168.88.8 255.255.255.0"
 push "redirect-gateway def1 bypass-dhcp"
 push "dhcp-option DNS 10.0.2.2"
 push "dhcp-option DISABLE-NBT"
-push "dhcp-option DOMAIN darkypi.cf"
+push "dhcp-option DOMAIN 31.32.127.70"
 
 client-to-client
 keepalive 1800 4000
