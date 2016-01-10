@@ -22,9 +22,9 @@ iptables -t filter -F
 iptables -t filter -X
 
 # Interdire toute connexion entrante et sortante
-iptables -t filter -P INPUT DROP
-iptables -t filter -P FORWARD DROP
-iptables -t filter -P OUTPUT DROP
+#iptables -t filter -P INPUT DROP
+#iptables -t filter -P FORWARD DROP
+#iptables -t filter -P OUTPUT DROP
 
 # ---
 
@@ -37,8 +37,8 @@ iptables -t filter -A INPUT -i lo -j ACCEPT
 iptables -t filter -A OUTPUT -o lo -j ACCEPT
 
 # ICMP (Ping)
-iptables -t filter -A INPUT -p icmp -j ACCEPT
-iptables -t filter -A OUTPUT -p icmp -j ACCEPT
+#iptables -t filter -A INPUT -p icmp -j ACCEPT
+#iptables -t filter -A OUTPUT -p icmp -j ACCEPT
 
 # ---
 
@@ -47,15 +47,6 @@ iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
 
 # SSH Out
 iptables -t filter -A OUTPUT -p tcp --dport 22 -j ACCEPT
-
-# DNS In/Out
-iptables -t filter -A OUTPUT -p tcp --dport 53 -j ACCEPT
-iptables -t filter -A OUTPUT -p udp --dport 53 -j ACCEPT
-iptables -t filter -A INPUT -p tcp --dport 53 -j ACCEPT
-iptables -t filter -A INPUT -p udp --dport 53 -j ACCEPT
-
-# NTP Out
-iptables -t filter -A OUTPUT -p udp --dport 123 -j ACCEPT
 
 # HTTP + HTTPS Out
 iptables -t filter -A OUTPUT -p tcp --dport 80 -j ACCEPT
@@ -76,37 +67,13 @@ iptables -t filter -A INPUT -p tcp --dport 33333 -j ACCEPT
 iptables -t filter -A INPUT -p udp -m state --state NEW -m udp --dport 1194 -j ACCEPT
 iptables -t filter -A FORWARD -s 192.168.88.0/24 -j ACCEPT
 iptables -t filter -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o wlan0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o eth0 -j MASQUERADE
 
 ###
-# TEAMSPEAK3
+# MUMBLE
 ###
 
 # Voix
 
-iptables -t filter -A OUTPUT -p tcp --dport 9987 -j ACCEPT
-iptables -t filter -A INPUT -p udp --dport 9987 -j ACCEPT
-
-# Fichier
-
-iptables -t filter -A OUTPUT -p tcp --dport 30033 -j ACCEPT
-iptables -t filter -A INPUT -p tcp --dport 30033 -j ACCEPT
-
-# Auth
-
-#iptables -t filter -A OUTPUT -p tcp --dport 10011 -j ACCEPT
-#iptables -t filter -A INPUT -p tcp --dport 10011 -j ACCEPT
-
-###
-# SEEDBOX
-###
-
-# Interface Web
-
-iptables -t filter -A OUTPUT -p tcp --dport 9091 -j ACCEPT
-iptables -t filter -A INPUT -p tcp --dport 9091 -j ACCEPT
-
-# Partage Seed/Leech
-
-iptables -t filter -A OUTPUT -p tcp --dport 51413 -j ACCEPT
-iptables -t filter -A INPUT -p tcp --dport 51413 -j ACCEPT
+iptables -t filter -A OUTPUT -p tcp --dport 64738 -j ACCEPT
+iptables -t filter -A INPUT -p udp --dport 64738 -j ACCEPT
